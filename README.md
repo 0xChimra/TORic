@@ -5,3 +5,6 @@
 
 * To Install the requirements for the script, execute: `pip install -r requirements.txt`
 
+## Functions :
+
+* Coming Soon
