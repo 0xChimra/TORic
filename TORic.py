@@ -229,7 +229,3 @@ class TORic(object):
             except:
                 pass
             sys.exit(1)
-            
-    def debug(self):
-        print(self.tor_process)
- 
