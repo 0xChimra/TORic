@@ -333,18 +333,3 @@ class TORic(object):
             except:
                 pass
             sys.exit(1)
-
-    def version(self, printer=False):
-        try:
-            version = self.toric_version
-            if printer == True:
-                print(version)
-            return version
-        except Exception as ex:
-            if self.verbose == True:
-                print("Error in getting the version of TORic: ", ex)
-            try:
-                self.tor_process.kill()
-            except:
-                pass
-            sys.exit(1)
