@@ -50,6 +50,7 @@ class TORic(object):
                 print("Error in TORic Configuration : ", ex)
             sys.exit(1)
 
+        self.toric_version = "TORic Construct v0.2"
         self.verbose = verbose
         self.socks_port = int(socks_port)
         self.control_port = int(control_port)      
@@ -327,6 +328,21 @@ class TORic(object):
         except Exception as ex:
             if self.verbose == True:
                 print("Error in getting last tor heart beat: ", ex)
+            try:
+                self.tor_process.kill()
+            except:
+                pass
+            sys.exit(1)
+
+    def version(self, printer=False):
+        try:
+            version = self.toric_version
+            if printer == True:
+                print(version)
+            return version
+        except Exception as ex:
+            if self.verbose == True:
+                print("Error in getting the version of TORic: ", ex)
             try:
                 self.tor_process.kill()
             except:
