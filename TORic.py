@@ -229,3 +229,106 @@ class TORic(object):
             except:
                 pass
             sys.exit(1)
+    
+    def get_Bandwidth(self, printer=False):
+        try:
+            bytes_read = self.controller.get_info("traffic/read")
+            bytes_written = self.controller.get_info("traffic/written")
+
+            if printer == True:
+                print("Bandwidth Read : ", str(bytes_read) + " Bandwidth Written : ", str(bytes_written))
+            
+
+            return bytes_read, bytes_written
+
+        except Exception as ex:
+            if self.verbose == True:
+                print("Error in getting the bandwidth usage : ", ex)
+            try:
+                self.tor_process.kill()
+            except:
+                pass
+            sys.exit(1)
+    
+    def get_ACTIVEciruits(self, printer=False):
+        try:
+
+            ciruits = self.controller.get_circuits()
+            if printer == True:
+                for ciruit in ciruits:
+                    print(ciruit, "\n")
+            
+            return ciruits
+
+        except Exception as ex:
+            if self.verbose == True:
+                print("Error in getting active ciruits : ", ex)
+            try:
+                self.tor_process.kill()
+            except:
+                pass
+            sys.exit(1)
+    
+    def get_ACTIVEstreams(self, printer=False):
+        try:
+            streams = self.controller.get_streams()
+            if printer == True:
+                for stream in streams:
+                    print(stream, "\n")
+            
+            return streams
+
+        except Exception as ex:
+            if self.verbose == True:
+                print("Error in getting active streams : ", ex)
+            try:
+                self.tor_process.kill()
+            except:
+                pass
+            sys.exit(1)
+    
+    def close_ACTIVEciruit(self, circuit_id, printer=False):
+        try:
+            self.controller.close_circuit(str(circuit_id))
+            if printer == True:
+                print("TORic force-closed the Tor Ciruit", str(circuit_id))
+        
+        except Exception as ex:
+            if self.verbose == True:
+                print("Error in closing a tor ciruits : ", ex)
+            try:
+                self.tor_process.kill()
+            except:
+                pass
+            sys.exit(1)
+    
+    def get_allNetStatRelays(self, printer=False):
+        try:
+            net_stat = self.controller.get_network_statuses()
+            if printer == True:
+                for nets in net_stat:
+                    print(nets)
+            return net_stat
+        except Exception as ex:
+            if self.verbose == True:
+                print("Error in getting all Relays: ", ex)
+            try:
+                self.tor_process.kill()
+            except:
+                pass
+            sys.exit(1)
+
+    def get_latestHeartBeat(self, printer=False):
+        try:
+            last_HeartBeat = self.controller.get_latest_heartbeat()
+            if printer == True:
+                print(last_HeartBeat)
+            return last_HeartBeat
+        except Exception as ex:
+            if self.verbose == True:
+                print("Error in getting last tor heart beat: ", ex)
+            try:
+                self.tor_process.kill()
+            except:
+                pass
+            sys.exit(1)
