@@ -1,4 +1,4 @@
-![alt text](https://github.com/Blessed-NullArray/TORic/blob/master/imgs/toric-banner2.png?raw=true)
+![TORic](https://github.com/Blessed-NullArray/TORic/blob/master/imgs/toric-banner2.png?raw=true)
 
 **TORic** is an implementation of Tor's Python based controller Library [Stem](https://github.com/torproject/stem) with a few extras that i made for easier use and implementation in future scripts and projects of mine.
 
