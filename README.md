@@ -3,8 +3,10 @@
 
 ## Requirements :
 * You need to be on a Linux based System
+
 * You need to have tor installed
-* To Install the requirements for the script, execute: `pip install -r requirements.txt`
+
+* To Install the Python requirements for the script, execute: `pip3 install -r requirements.txt`
 
 ## Wiki :
 
