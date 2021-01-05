@@ -2,12 +2,15 @@
 
 **TORic** is an implementation of Tor's Python based controller Library [Stem](https://github.com/torproject/stem) with a few extras that i made for easier use and implementation in future scripts and projects of mine.
 
-## Requirements :
-* You need to be on a Linux based System
+# Requirements :
 
-* You need to have **tor** installed
+Things you will need :
 
-* To Install the Python requirements for the script, execute: `pip3 install -r requirements.txt`
+* tor
+
+* linux based system
+
+* the requirements from `requirements.txt` ( **You can install those by executing `sudo pip3 install -r requirements.txt`)
 
 ## Wiki :
 
