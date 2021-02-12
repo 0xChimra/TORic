@@ -28,8 +28,11 @@ class TORic(object):
             if self.os_type == "windows":
                 if tor_path == None:
                     if verbose == True:
-                        print("Please select a path via 'tor_path=PATH\\TO\\TOR.EXE'")
-                    sys.exit(1)
+                        print("Defaulting to TORic Windows binary")
+                    work_dir = os.getcwd()
+                    tor_binary = work_dir + "\\WindowsTor\\Tor\\tor.exe"
+                    print(tor_binary)
+                    self.tor_path = str(tor_binary)
                 else:
                     self.tor_path = str(tor_path)
 

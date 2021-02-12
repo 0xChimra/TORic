@@ -1,5 +1,0 @@
-SOCKSPort 23000
-ControlPort 23001
-RunAsDaemon 0
-HashedControlPassword Feb 12 21:45:00.142 [warn] Tor was compiled with zstd 1.4.5, but is running with zstd 1.4.8. For safety, we'll avoid using advanced zstd functionality.
-16:822AF15169BC54BE604A1CA98F516A0807F589626ECDD4BAFC746F962B
