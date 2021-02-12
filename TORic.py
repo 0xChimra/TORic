@@ -71,7 +71,7 @@ class TORic(object):
                 print("Error in TORic Configuration : ", ex)
             sys.exit(1)
 
-        self.version = "TORic Construct v0.5"
+        self.version = "TORic Construct v0.6"
         self.verbose = verbose
         self.socks_port = int(socks_port)
         self.control_port = int(control_port)      
