@@ -14,16 +14,21 @@ from threading import Thread
 class TORic(object):
     def __init__(self, socks_port="", control_port="", verbose=True, password="", allow_admin=False, tor_path=None):
         try:
-            if allow_admin == False:
-                if int(os.getuid()) == 0:
-                    if verbose == True:
-                        print("Do Not Launch a Tor Handler as a superuser or root")
-                    sys.exit(1)
 
             if sys.platform == "linux" or sys.platform == "linux2":
                 self.os_type = "linux"
             elif sys.platform == "win32":
                 self.os_type = "windows"
+
+
+            if allow_admin == False:
+                if not self.os_type == "windows":
+                    if int(os.getuid()) == 0:
+                        if verbose == True:
+                            print("Do Not Launch a Tor Handler as a superuser or root")
+                        sys.exit(1)
+
+            
 
             if self.os_type == "windows":
                 if tor_path == None:
@@ -31,7 +36,6 @@ class TORic(object):
                         print("Defaulting to TORic Windows binary")
                     work_dir = os.getcwd()
                     tor_binary = work_dir + "\\WindowsTor\\Tor\\tor.exe"
-                    print(tor_binary)
                     self.tor_path = str(tor_binary)
                 else:
                     self.tor_path = str(tor_path)
