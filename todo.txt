@@ -1,0 +1,3 @@
+- TORic for Windows
+- force allow super user or admin as option | done
+- get node ips out of ciruit
