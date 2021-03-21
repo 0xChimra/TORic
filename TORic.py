@@ -103,6 +103,7 @@ class TORic(object):
     def constuct_controller(self):
         try:
             controller = Controller.from_port(port=self.control_port)
+            time.sleep(2)
             controller.authenticate(password=self.password)
             self.controller = controller
         except Exception as ex:
