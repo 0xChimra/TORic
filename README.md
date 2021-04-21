@@ -1,6 +1,8 @@
-![TORic](https://github.com/Blessed-NullArray/TORic/blob/master/imgs/TORIC_LOGO.png?raw=true)
 
-  
+<p align="center">
+  <img src="https://github.com/Blessed-NullArray/TORic/blob/master/imgs/TORIC_LOGO.png?raw=true" alt="TORic LOGO"/>
+</p>
+
 
 **TORic** is an implementation of Tor's Python based controller Library [Stem](https://github.com/torproject/stem) with a few extras that i made for easier use and implementation in future scripts and projects of mine.
 
