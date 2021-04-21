@@ -4,6 +4,7 @@ from stem import Signal
 import stem.process
 import sys
 import os
+import signal
 import random
 import string
 import subprocess
@@ -12,7 +13,7 @@ import requests
 from threading import Thread
 
 class TORic(object):
-    def __init__(self, socks_port="", control_port="", verbose=True, password="", allow_admin=False, tor_path=None):
+    def __init__(self, socks_port="", control_port="", verbose=True, auth="cookie", password="", allow_admin=False, tor_path=None):
         try:
 
             if sys.platform == "linux" or sys.platform == "linux2":
@@ -22,11 +23,10 @@ class TORic(object):
 
 
             if allow_admin == False:
-                if not self.os_type == "windows":
-                    if int(os.getuid()) == 0:
-                        if verbose == True:
-                            print("Do Not Launch a Tor Handler as a superuser or root")
-                        sys.exit(1)
+                if int(os.getuid()) == 0:
+                    if verbose == True:
+                        print("Do Not Launch a Tor Handler as a superuser or root")
+                    sys.exit(1)
 
             
 
@@ -60,21 +60,31 @@ class TORic(object):
                     print("The Socks Port and the Control Port are on the same Port")
                 sys.exit(1)
 
-            if password == "":
-                self.password = self.gen_torpassword()
-                self.hashed_password = self.hash_passwd()
+            if auth == "cookie":
+                self.password = None
+                self.hashed_password = None
+            elif auth == "password":
+                if password == "":
+                    self.password = self.gen_torpassword()
+                    self.hashed_password = self.hash_passwd()
+                else:
+                    self.password = str(password)
+                    self.hashed_password = self.hash_passwd()
             else:
-                self.password = str(password)
-                self.hashed_password = self.hash_passwd()
+                if verbose == True:
+                    print("Unknown Authentication set, use 'cookie' or 'password'.")
+                sys.exit(1)
+
         except Exception as ex:
             if verbose == True:
                 print("Error in TORic Configuration : ", ex)
             sys.exit(1)
 
-        self.version = "TORic Construct v0.6"
+        self.version = "TORic Construct v0.7"
         self.verbose = verbose
         self.socks_port = int(socks_port)
-        self.control_port = int(control_port)      
+        self.control_port = int(control_port)
+        self.auth = auth 
 
     def gen_torpassword(self):
         #vars
@@ -103,14 +113,18 @@ class TORic(object):
     def constuct_controller(self):
         try:
             controller = Controller.from_port(port=self.control_port)
-            time.sleep(2)
-            controller.authenticate(password=self.password)
+            if self.auth == "cookie":
+                controller.authenticate()
+            elif self.auth == "password":
+                controller.authenticate(password=self.password)
             self.controller = controller
+            self.pid = controller.get_pid()
         except Exception as ex:
             if self.verbose == True:
                 print("Error in controller construction : ", ex)
             try:
                 self.tor_process.kill()
+                os.kill(self.pid, signal.SIGTERM)
             except:
                 pass
             sys.exit(1)
@@ -123,6 +137,7 @@ class TORic(object):
                 print("Error in controller deconstruction : ", ex)
             try:
                 self.tor_process.kill()
+                os.kill(self.pid, signal.SIGTERM)
             except:
                 pass
             sys.exit(1)
@@ -145,14 +160,24 @@ class TORic(object):
 
             if torrc == True:
                 if torrc_path == None:
-                    with open("torrc", "w") as f:
-                        f.write("SOCKSPort " + str(self.socks_port) + "\nControlPort " + str(self.control_port) + "\nRunAsDaemon " + daemon + "\nHashedControlPassword " + self.hashed_password)
+                    if self.auth == "cookie":
+                        with open("torrc", "w") as f:
+                            f.write("SOCKSPort " + str(self.socks_port) + "\nControlPort " + str(self.control_port) + "\nRunAsDaemon " + daemon + "\nCookieAuthentication 1")
+                    elif self.auth == "password":
+                        with open("torrc", "w") as f:
+                            f.write("SOCKSPort " + str(self.socks_port) + "\nControlPort " + str(self.control_port) + "\nRunAsDaemon " + daemon + "\nHashedControlPassword " + self.hashed_password)
                 else:
                     if not torrc_path[-1] == "/":
                         torrc_path = torrc_path + "/"
                     path_to_torrc = str(torrc_path + "torrc")
-                    with open(path_to_torrc, "w") as f:
-                        f.write("SOCKSPort " + str(self.socks_port) + "\nControlPort " + str(self.control_port) + "\nRunAsDaemon " + daemon + "\nHashedControlPassword " + self.hashed_password)
+
+                    if self.auth == "cookie":
+                        with open(path_to_torrc, "w") as f:
+                            f.write("SOCKSPort " + str(self.socks_port) + "\nControlPort " + str(self.control_port) + "\nRunAsDaemon " + daemon + "\nCookieAuthentication 1")
+
+                    elif self.auth == "password":
+                        with open(path_to_torrc, "w") as f:
+                            f.write("SOCKSPort " + str(self.socks_port) + "\nControlPort " + str(self.control_port) + "\nRunAsDaemon " + daemon + "\nHashedControlPassword " + self.hashed_password)
                 
                 if not torrc_path == None:
                     if not torrc_path[-1] == "/":
@@ -173,7 +198,11 @@ class TORic(object):
                         self.tor_process = stem.process.launch_tor(tor_cmd=self.tor_path, torrc_path=path_to_torrc)
                     
             elif torrc == False:
-                torrc_config = {"SOCKSPort": str(self.socks_port), "ControlPort": str(self.control_port), "RunAsDaemon": daemon, "HashedControlPassword": self.hashed_password}
+                if self.auth == "cookie":
+                    torrc_config = {"SOCKSPort": str(self.socks_port), "ControlPort": str(self.control_port), "RunAsDaemon": daemon, "CookieAuthentication": "1"}
+                elif self.auth == "password":
+                    torrc_config = {"SOCKSPort": str(self.socks_port), "ControlPort": str(self.control_port), "RunAsDaemon": daemon, "HashedControlPassword": self.hashed_password}
+
                 if self.os_type == "linux":
                     if self.verbose == True:
                         self.tor_process = stem.process.launch_tor_with_config(config = torrc_config, init_msg_handler = bootstrapped)
@@ -184,11 +213,13 @@ class TORic(object):
                         self.tor_process = stem.process.launch_tor_with_config(tor_cmd=self.tor_path, config = torrc_config, init_msg_handler = bootstrapped)
                     else:
                         self.tor_process = stem.process.launch_tor_with_config(tor_cmd=self.tor_path, config = torrc_config)
+
         except Exception as ex:
             if self.verbose == True:
                 print("Error in tor process construction : ", ex)
             try:
                 self.tor_process.kill()
+                os.kill(self.pid, signal.SIGTERM)
             except:
                 pass
             sys.exit(1)
@@ -196,6 +227,7 @@ class TORic(object):
     def deconstruct_torprocess(self):
         try:
             self.tor_process.kill()
+            os.kill(self.pid, signal.SIGTERM)
         except Exception as ex:
             if self.verbose == True:
                 print("Error in tor process deconstruction : ", ex)
@@ -210,6 +242,7 @@ class TORic(object):
                 print("Error in setting the exit nodes : ", ex)
             try:
                 self.tor_process.kill()
+                os.kill(self.pid, signal.SIGTERM)
             except:
                 pass
             sys.exit(1)
@@ -230,6 +263,7 @@ class TORic(object):
                 print("Error in getting the ip : ", ex)
             try:
                 self.tor_process.kill()
+                os.kill(self.pid, signal.SIGTERM)
             except:
                 pass
             sys.exit(1)
@@ -253,6 +287,7 @@ class TORic(object):
                 print("Error in getting the tor exitnode list : ", ex)
             try:
                 self.tor_process.kill()
+                os.kill(self.pid, signal.SIGTERM)
             except:
                 pass
             sys.exit(1)
@@ -267,6 +302,7 @@ class TORic(object):
                 print("Error in getting the tor exitnode list : ", ex)
             try:
                 self.tor_process.kill()
+                os.kill(self.pid, signal.SIGTERM)
             except:
                 pass
             sys.exit(1)
@@ -289,6 +325,7 @@ class TORic(object):
                     print("BandWidth function error : ", ex)
                 try:
                     self.tor_process.kill()
+                    os.kill(self.pid, signal.SIGTERM)
                 except:
                     pass
         try:
@@ -304,6 +341,7 @@ class TORic(object):
                 print("Error in getting the bandwidth usage : ", ex)
             try:
                 self.tor_process.kill()
+                os.kill(self.pid, signal.SIGTERM)
             except:
                 pass
             sys.exit(1)
@@ -323,6 +361,7 @@ class TORic(object):
                 print("Error in getting active ciruits : ", ex)
             try:
                 self.tor_process.kill()
+                os.kill(self.pid, signal.SIGTERM)
             except:
                 pass
             sys.exit(1)
@@ -341,6 +380,7 @@ class TORic(object):
                 print("Error in getting active streams : ", ex)
             try:
                 self.tor_process.kill()
+                os.kill(self.pid, signal.SIGTERM)
             except:
                 pass
             sys.exit(1)
@@ -356,6 +396,7 @@ class TORic(object):
                 print("Error in closing a tor ciruits : ", ex)
             try:
                 self.tor_process.kill()
+                os.kill(self.pid, signal.SIGTERM)
             except:
                 pass
             sys.exit(1)
@@ -372,6 +413,7 @@ class TORic(object):
                 print("Error in getting all Relays: ", ex)
             try:
                 self.tor_process.kill()
+                os.kill(self.pid, signal.SIGTERM)
             except:
                 pass
             sys.exit(1)
@@ -387,6 +429,7 @@ class TORic(object):
                 print("Error in getting last tor heart beat: ", ex)
             try:
                 self.tor_process.kill()
+                os.kill(self.pid, signal.SIGTERM)
             except:
                 pass
             sys.exit(1)

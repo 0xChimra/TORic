@@ -1,12 +1,14 @@
-![TORic](https://github.com/Blessed-NullArray/TORic/blob/master/imgs/toric-banner2.png?raw=true)
+![TORic](https://github.com/Blessed-NullArray/TORic/blob/master/imgs/TORIC_LOGO.png?raw=true)
 
   
 
 **TORic** is an implementation of Tor's Python based controller Library [Stem](https://github.com/torproject/stem) with a few extras that i made for easier use and implementation in future scripts and projects of mine.
 
-# Update :
+# Updates :
 
 **TORic** now works on Linux and Windows!
+
+**TORic** now supports cookie authentication!
 
 
 # Requirements :
