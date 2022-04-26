@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="https://github.com/Blessed-NullArray/TORic/blob/master/imgs/TORIC_LOGO.png?raw=true" alt="TORic LOGO"/>
+  <img src="https://github.com/0xChimra/TORic/blob/master/imgs/TORIC_LOGO.png?raw=true" alt="TORic LOGO"/>
 </p>
 
 
@@ -32,7 +32,7 @@ Things you will need :
 
   
 
-* https://github.com/Blessed-NullArray/TORic/wiki
+* https://github.com/0xChimra/TORic/wiki
 
 # Example :
 
