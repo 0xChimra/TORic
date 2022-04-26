@@ -36,4 +36,4 @@ Things you will need :
 
 # Example :
 
-![TORic](https://github.com/Blessed-NullArray/TORic/blob/master/imgs/example.png?raw=true)
+![TORic](https://github.com/0xChimra/TORic/blob/master/imgs/example.png?raw=true)
